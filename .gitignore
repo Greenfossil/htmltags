@@ -1,0 +1,11 @@
+target
+/.idea
+/.idea_modules
+vscode/
+.metals
+.vscode
+.bloop
+metals.sbt
+.bsp
+.dotty-ide*
+.java-version
