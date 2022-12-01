@@ -132,5 +132,5 @@ The result will be:
 
 ## License
 
-commons-json is licensed under the Apache license version 2.
+htmltags is licensed under the Apache license version 2.
 See [LICENSE](LICENSE.txt).
