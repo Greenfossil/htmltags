@@ -1,6 +1,6 @@
 # htmltags
 
-![](https://github.com/Greenfossil/htmltags/actions/workflows/run-tests.yml/badge.svg)
+![](https://img.shields.io/github/workflow/status/Greenfossil/htmltags/Run%20tests)
 ![](https://img.shields.io/github/license/Greenfossil/htmltags)
 ![](https://img.shields.io/github/v/tag/Greenfossil/htmltags)
 
