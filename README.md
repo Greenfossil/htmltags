@@ -130,6 +130,122 @@ The result will be:
 </html>
 ```
 
+### CSS Selectors
+
+It is possible to use CSS selectors to query your HTML fragment in scala
+```scala
+val frag = div(
+    p("1st paragraph"),
+    p("2nd paragraph"),
+    p("3rd paragraph"),
+    p("4th paragraph")
+)
+
+println("First <p> child element: " + frag.cssQuery("p:first-child").render)
+println("Last <p> child element: " + frag.cssQuery("p:last-child").render)
+```
+
+We will get:
+```
+First <p> child element: <p>1st paragraph</p>
+Last <p> child element: <p>4th paragraph</p>
+```
+
+We can then use the selectors to modify, add or remove elements from our fragment
+
+Adding a new element:
+```scala
+val frag = div(
+  div(cls:="target"),
+  p("1st paragraph"),
+  p("2nd paragraph"),
+  p("3rd paragraph"),
+  p("4th paragraph")
+)
+
+println(frag.addNodes("div.target", p("New paragraph in nested div")).render)
+```
+
+We will get:
+```html
+<div>
+  <div class="target">
+    <p>New paragraph in nested div</p>
+  </div>
+  <p>1st paragraph</p>
+  <p>2nd paragraph</p>
+  <p>3rd paragraph</p>
+  <p>4th paragraph</p>
+</div>
+```
+
+Modifying existing element:
+```scala
+val frag = div(
+  p("1st paragraph"),
+  p("2nd paragraph"),
+  p("3rd paragraph"),
+  p("4th paragraph")
+)
+
+println(frag.addNodes("p:nth-child(even)", color:="red").render)
+```
+
+Output:
+```html
+<div>
+  <p>1st paragraph</p>
+  <p style="color: red;">2nd paragraph</p>
+  <p>3rd paragraph</p>
+  <p style="color: red;">4th paragraph</p>
+</div>
+```
+
+Modifying an attribute:
+```scala
+val frag = div(
+  p(cls:="my first paragraph", "1st paragraph"),
+  p("2nd paragraph"),
+  p("3rd paragraph"),
+  p("4th paragraph")
+)
+
+def modFn(attr: Attribute): Option[Attribute] = Option(attr.findAndReplaceValue("my", ""))
+val res = frag.modifyAttribute(".paragraph", cls, modFn)
+println(res.render)
+```
+
+Output:
+```html
+<div>
+  <p class="first paragraph">1st paragraph</p>
+  <p>2nd paragraph</p>
+  <p>3rd paragraph</p>
+  <p>4th paragraph</p>
+</div>
+```
+
+Removing an element:
+```scala
+val frag = div(
+  p("1st paragraph"),
+  p("2nd paragraph"),
+  p(id:="third-paragraph", "3rd paragraph"),
+  p("4th paragraph")
+)
+
+println(frag.deleteTags("#third-paragraph").render)
+```
+
+Output:
+```html
+<div>
+  <p>1st paragraph</p>
+  <p>2nd paragraph</p>
+  <p>4th paragraph</p>
+</div>
+```
+
 ## License
 
 htmltags is licensed under the Apache license version 2.
