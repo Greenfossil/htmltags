@@ -35,7 +35,7 @@ val frag = html(
 println(frag.render)
 ```  
 
-The result will be:
+Result:
 ```html
 <html>
     <body>
@@ -75,7 +75,7 @@ val frag = html(
 println(frag.render)
 ```
 
-Which will generate:
+Result:
 ```html
 <html>
     <head title="My Page"></head>
@@ -113,7 +113,7 @@ val frag = html(
 println(frag.render)
 ```
 
-The result will be:
+Result:
 ```html
 <html>
   <body>
@@ -145,7 +145,7 @@ println("First <p> child element: " + frag.cssQuery("p:first-child").render)
 println("Last <p> child element: " + frag.cssQuery("p:last-child").render)
 ```
 
-We will get:
+Result:
 ```
 First <p> child element: <p>1st paragraph</p>
 Last <p> child element: <p>4th paragraph</p>
@@ -166,7 +166,7 @@ val frag = div(
 println(frag.addNodes("div.target", p("New paragraph in nested div")).render)
 ```
 
-We will get:
+Result:
 ```html
 <div>
   <div class="target">
@@ -191,7 +191,7 @@ val frag = div(
 println(frag.addNodes("p:nth-child(even)", color:="red").render)
 ```
 
-Output:
+Result:
 ```html
 <div>
   <p>1st paragraph</p>
@@ -215,7 +215,7 @@ val res = frag.modifyAttribute(".paragraph", cls, modFn)
 println(res.render)
 ```
 
-Output:
+Result:
 ```html
 <div>
   <p class="first paragraph">1st paragraph</p>
@@ -237,12 +237,220 @@ val frag = div(
 println(frag.deleteTags("#third-paragraph").render)
 ```
 
-Output:
+Result:
 ```html
 <div>
   <p>1st paragraph</p>
   <p>2nd paragraph</p>
   <p>4th paragraph</p>
+</div>
+```
+
+## Advanced Features
+
+### Embedded styles
+```scala
+val styles = embeddedStyle(
+  """
+    | .header {
+    |   background-color: black;
+    |   color: white;
+    | }
+    |""".stripMargin)
+
+val frag = div(
+  styles,
+  h1(cls:="header", "My Header"),
+  p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer suscipit, nulla sed vestibulum porttitor.")
+)
+
+println(frag.render)
+```
+
+Result:
+```html
+<div>
+  <style>
+    .header {
+      background-color: black;
+      color: white;
+    }
+  </style>
+  <h1 class="header">My Header</h1>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer suscipit, nulla sed vestibulum porttitor.</p>
+</div>
+```
+
+### Conditional rendering
+```scala
+val frag = div(
+  div(
+    h3("Will only render paragraph 3, 4 and 5"),
+    1 to 5 map { index =>
+      ifTrue(index > 2, p("Paragraph ", index))
+    }
+  ),
+
+  div(
+    h3("Will only render paragraph 1 and 2"),
+    1 to 5 map { index =>
+      ifFalse(index > 2, p("Paragraph ", index))
+    }
+  )
+)
+
+println(frag.render)
+```
+
+Result:
+```html
+<div>
+  <div>
+    <h3>Will only render paragraph 3, 4 and 5</h3>
+    <p>Paragraph 3</p>
+    <p>Paragraph 4</p>
+    <p>Paragraph 5</p>
+  </div>
+  <div>
+    <h3>Will only render paragraph 1 and 2</h3>
+    <p>Paragraph 1</p>
+    <p>Paragraph 2</p>
+  </div>
+</div>
+```
+
+### Automatic handling of different data types
+```scala
+case class UserProfile(firstname: String, lastname: String, age: Int, dob: LocalDate, gender: String, emailOpt: Option[String])
+
+val users = List(
+  UserProfile("Cyrus", "Albright", 30, LocalDate.now.minusYears(30), null, None),
+  UserProfile("Tressa", "Colzione", 18, LocalDate.now.minusYears(18), "Female", Some("tressa@octo.path"))
+)
+
+val frag = div(
+  users.zipWithIndex.map{ (user, index) => List(
+    h2("User ", index + 1),
+    ul(
+      li(strong("First Name: "), user.firstname),
+      li(strong("Last Name: "), user.lastname),
+      li(strong("Birthday: "), user.dob),
+      li(strong("Gender: "), user.gender),
+      li(strong("Contact: "), user.emailOpt),
+    )
+  )
+  }
+)
+
+println(frag.render)
+```
+
+Result:
+```html
+<div>
+    <h2>User 1</h2>
+    <ul>
+        <li>
+            <strong>First Name: </strong>Cyrus
+        </li>
+        <li>
+            <strong>Last Name: </strong>Albright
+        </li>
+        <li>
+            <strong>Birthday: </strong>1992-12-02
+        </li>
+        <li>
+            <strong>Gender: </strong>
+        </li>
+        <li>
+            <strong>Contact: </strong>
+        </li>
+    </ul>
+    <h2>User 2</h2>
+    <ul>
+        <li>
+            <strong>First Name: </strong>Tressa
+        </li>
+        <li>
+            <strong>Last Name: </strong>Colzione
+        </li>
+        <li>
+            <strong>Birthday: </strong>2004-12-02
+        </li>
+        <li>
+            <strong>Gender: </strong>Female
+        </li>
+        <li>
+            <strong>Contact: </strong>tressa@octo.path
+        </li>
+    </ul>
+</div>
+```
+
+### Preventing Cross Site Scripting (XSS)
+```scala
+val frag = div(
+  p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer suscipit, nulla sed vestibulum porttitor."),
+  p("<script>alert('Hello World');</script>")
+)
+
+println(frag.render)
+```
+
+Result:
+```
+<div>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer suscipit, nulla sed vestibulum porttitor.</p>
+  <p>&lt;script&gt;alert(&apos;Hello World&apos;);&lt;&#x2F;script&gt;</p>
+</div>
+```
+
+To render without escaping special characters, use the `raw()` method
+```scala
+val rawHtml =
+  """
+    |<div>
+    |  <p>1st paragraph</p>
+    |  <p>2nd paragraph</p>
+    |  <script>some script</script>
+    |</div>
+    |""".stripMargin
+
+println(raw(rawHtml).render)
+```
+
+Result:
+```html
+<div>
+  <p>1st paragraph</p>
+  <p>2nd paragraph</p>
+  <script>
+    some script
+  </script>
+</div>
+```
+
+### Using data attributes
+```scala
+val frag = div(
+    div(data.placeholder := "hello world"),
+    div(data.placeholder := 100),
+    div(data.placeholder := true),
+    div(data.placeholder := Option("hello world")),
+    div(data.placeholder := null)
+)
+
+println(frag.render)
+```
+
+Result:
+```html
+<div>
+  <div data-placeholder="hello world"></div>
+  <div data-placeholder="100"></div>
+  <div data-placeholder="true"></div>
+  <div data-placeholder="hello world"></div>
+  <div data-placeholder=""></div>
 </div>
 ```
 
