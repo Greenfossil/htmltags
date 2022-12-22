@@ -3,6 +3,7 @@
 ![](https://img.shields.io/github/actions/workflow/status/Greenfossil/htmltags/run-tests.yml?branch=master)
 ![](https://img.shields.io/github/license/Greenfossil/htmltags)
 ![](https://img.shields.io/github/v/tag/Greenfossil/htmltags)
+[![javadoc](https://javadoc.io/badge2/com.greenfossil/htmltags_3/javadoc.svg)](https://javadoc.io/doc/com.greenfossil/htmltags_3)
 
 This is the official Greenfossil Scala templating engine.
 
