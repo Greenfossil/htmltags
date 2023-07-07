@@ -17,6 +17,7 @@
 package com.greenfossil.htmltags
 
 import scala.language.implicitConversions
+import scala.util.{Failure, Success}
 
 /*
  * Type Aliases
@@ -120,10 +121,11 @@ extension (ts: Seq[Node]) def render: String = Frag(ts).render
 
 given [U <:  Int| Long | Double | Float | BigDecimal]: Conversion [U, CSSUnit] = CSSUnit(_)
 
-given Conversion[Any, Node] = anyToNode(_)
 
 def anyToNode(any: Any): Node =
   any.asInstanceOf[Matchable] match
+    case Success(x) => anyToNode(x)
+    case Failure(ex) => s"Throwable caught: ${ex.getClass.getCanonicalName} - message:${ex.getMessage}"
     case opt: Option[?] => anyToNode(opt.toSeq)
     case xs: Seq[?] => Frag(xs.map(x => anyToNode(x)))
     case (null | Nil) => Node()

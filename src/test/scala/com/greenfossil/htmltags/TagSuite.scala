@@ -95,4 +95,27 @@ class TagSuite extends munit.FunSuite {
 
   }
 
+  import scala.util.Try
+  test("scala.util.Try - Success") {
+
+    val tag = div(Try("Hello World!"))
+    assertEquals(tag.render, "<div>Hello World!</div>")
+  }
+
+  test("scala.util.Try - Failure") {
+    import scala.util.Try
+    val tag = div(Try(throw IllegalArgumentException("Bad Argument")))
+    assertEquals(tag.render, "<div>Throwable caught: java.lang.IllegalArgumentException - message:Bad Argument</div>")
+  }
+
+  test("Try.map - success"){
+    val tryTag = Try("Hello World!").map(s => div(s))
+    assertEquals(tryTag.render, "<div>Hello World!</div>")
+  }
+
+  test("Try.map - failure") {
+    val tryTag = Try(throw IllegalArgumentException("Bad Argument")).map(s => div(s))
+    assertEquals(tryTag.render, "Throwable caught: java.lang.IllegalArgumentException - message:Bad Argument")
+  }
+
 }

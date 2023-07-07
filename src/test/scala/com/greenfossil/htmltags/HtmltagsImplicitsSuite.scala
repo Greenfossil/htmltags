@@ -42,7 +42,6 @@ class HtmltagsImplicitsSuite extends munit.FunSuite  {
     assertNoDiff(fruitTag.render, """<div>appleorangepear</div>""")
 
     val vegs = List("spinach", "kailan", "potatoes")
-    val basket = List(fruits, vegs)
     val basketTag = div(fruits, vegs)
     assertNoDiff(basketTag.render, """<div>appleorangepearspinachkailanpotatoes</div>""")
 

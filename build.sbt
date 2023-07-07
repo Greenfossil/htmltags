@@ -2,11 +2,11 @@ name := "htmltags"
 
 organization := "com.greenfossil"
 
-version := "1.0.1"
+version := "1.0.2-RC1"
 
 scalaVersion := "3.3.0"
 
-scalacOptions ++= Seq("-feature",  "-deprecation")
+scalacOptions ++= Seq("-feature",  "-deprecation", "-Wunused:all")
 
 Compile / javacOptions ++= Seq("-source", "17")
 

@@ -39,7 +39,8 @@ sealed trait Node:
 case object Node extends Node:
   def apply(): Node = this
 
-  given Conversion[Any, Node] = anyToNode(_)
+  type NodeCompatible = Any // Try[?] | Option[?] | IterableOnce[?] | Null | String | Int | Long | Double | Float | BigDecimal
+  given Conversion[NodeCompatible, Node] = anyToNode(_)
 
   override def render: String = ""
 end Node

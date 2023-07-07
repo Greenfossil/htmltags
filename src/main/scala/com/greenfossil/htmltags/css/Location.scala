@@ -84,7 +84,6 @@ sealed case class Location(tag: Tag, path: Path):
 
   lazy val parent: Option[Location] = path match 
     case p: Hole =>
-      val xs = p.left.reverse_::: (tag :: p.right)
       Some(Location(p.parent.tag, p.parent.path))
     case _ => None
 
