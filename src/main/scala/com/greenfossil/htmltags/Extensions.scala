@@ -16,6 +16,8 @@
 
 package com.greenfossil.htmltags
 
+import org.slf4j.LoggerFactory
+
 import scala.language.implicitConversions
 import scala.util.{Failure, Success}
 
@@ -125,7 +127,9 @@ given [U <:  Int| Long | Double | Float | BigDecimal]: Conversion [U, CSSUnit] =
 def anyToNode(any: Any): Node =
   any.asInstanceOf[Matchable] match
     case Success(x) => anyToNode(x)
-    case Failure(ex) => s"Throwable caught: ${ex.getClass.getCanonicalName} - message:${ex.getMessage}"
+    case Failure(ex) =>
+      LoggerFactory.getLogger("htmltags").error("Exception caught", ex)
+      s"Throwable caught: ${ex.getClass.getCanonicalName} - message:${ex.getMessage}"
     case opt: Option[?] => anyToNode(opt.toSeq)
     case xs: Seq[?] => Frag(xs.map(x => anyToNode(x)))
     case (null | Nil) => Node()
