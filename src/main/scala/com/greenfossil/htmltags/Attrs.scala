@@ -136,6 +136,11 @@ val onclick = attr("onclick")
 val onload = attr("onload")
 val onsubmit = attr("onsubmit")
 val sizes = attr("sizes")
+val onerror = attr("onerror")
+val onblur = attr("onblur")
+val ondrag = attr("ondrag")
+val ondrop = attr("ondrop")
+val onfocus = attr("onfocus")
 
 
 /*
