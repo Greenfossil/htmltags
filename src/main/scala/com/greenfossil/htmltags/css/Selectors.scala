@@ -29,6 +29,7 @@ import com.greenfossil.htmltags.css.parser.Specifier.*
 import com.greenfossil.htmltags.{Node, StringText, Tag}
 import org.slf4j.LoggerFactory
 
+import scala.annotation.unused
 import scala.collection.mutable.ListBuffer
 
 object Selectors:
@@ -187,8 +188,8 @@ class Selectors[T <: Tag](val root: T):
   }
 
   def extractTags(selectorString: String): (T, Seq[T]) = {
-    var extractedList = ListBuffer.empty[T]
-    def extractFn(tag: Tag, loc: Location): Option[Tag] = {
+    @unused var extractedList = ListBuffer.empty[T]
+    def extractFn(tag: Tag, @unused loc: Location): Option[Tag] = {
       extractedList += tag.asInstanceOf[T]
       None
     }
