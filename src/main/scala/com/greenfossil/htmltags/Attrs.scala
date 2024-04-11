@@ -123,6 +123,7 @@ val tpe = attr("type")
 val usemap = attr("usemap")
 val value = attr("value")
 val wrap = attr("wrap")
+val loading = attr("loading")
 
 
 /*

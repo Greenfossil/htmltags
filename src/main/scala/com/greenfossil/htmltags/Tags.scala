@@ -113,6 +113,7 @@ val wbr = UnPairedTag("wbr")
  * Image and multimedia
  */
 val img = UnPairedTag("img")
+val lazyImg = UnPairedTag("img")(loading := "lazy")
 val area = UnPairedTag("area")
 val audio = PairedTag("audio")
 val map = PairedTag("map")
