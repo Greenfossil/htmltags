@@ -2,7 +2,7 @@ name := "htmltags"
 
 organization := "com.greenfossil"
 
-version := "1.0.5-RC1"
+version := "1.0.5"
 
 scalaVersion := "3.3.1"
 
