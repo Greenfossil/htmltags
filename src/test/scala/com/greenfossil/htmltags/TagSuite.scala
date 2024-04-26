@@ -118,4 +118,14 @@ class TagSuite extends munit.FunSuite {
     assertEquals(tryTag.render, "Throwable caught: java.lang.IllegalArgumentException - message:Bad Argument")
   }
 
+  test("aTarget") {
+    val atag = aTarget
+    assertNoDiff(atag.render, """<a target="__single_global_anchor_tab__"></a>""")
+  }
+
+  test("aTarget()") {
+    val atag = aTarget("_self")
+    assertNoDiff(atag.render, """<a target="_self"></a>""")
+  }
+
 }

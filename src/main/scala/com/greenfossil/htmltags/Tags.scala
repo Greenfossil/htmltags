@@ -80,6 +80,8 @@ val ul = PairedTag("ul")
  * Inline text semantics
  */
 val a = PairedTag("a")
+val aTarget: Tag = aTarget("__single_global_anchor_tab__")
+def aTarget(value: String): Tag = a(target := value)
 val abbr = PairedTag("abbr")
 val b = PairedTag("b")
 val blockquote = PairedTag("blockquote")
