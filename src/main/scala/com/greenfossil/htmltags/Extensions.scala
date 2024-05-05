@@ -16,10 +16,16 @@
 
 package com.greenfossil.htmltags
 
-import org.slf4j.LoggerFactory
+import org.w3c.dom.Document
+import org.xml.sax.InputSource
 
+import java.io.{StringReader, StringWriter}
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
+import javax.xml.transform.{OutputKeys, TransformerFactory}
 import scala.language.implicitConversions
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Using}
 
 /*
  * Type Aliases
@@ -117,6 +123,33 @@ extension (s: String) def :=(value: AttributeValueType): Attribute = StaticAttri
 
 extension (ts: Seq[Node]) def render: String = Frag(ts).render
 
+extension (s: String)
+  def toDom: Document =
+    val builder = DocumentBuilderFactory
+      .newDefaultInstance()
+      .newDocumentBuilder()
+    builder.parse(InputSource(StringReader(s)))
+
+extension (doc: Document)
+  
+  def prettyPrint: String = print(indent = 2, omitDeclaration = true)
+
+  def print: String = print(0, true)
+  
+  def print(indent: Int, omitDeclaration: Boolean): String =
+    val xf = TransformerFactory.newDefaultInstance().newTransformer()
+    if indent > 0 then { //PrettyPrint
+      xf.setOutputProperty(OutputKeys.INDENT, "yes")
+      xf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", indent.toString)
+    }
+    if omitDeclaration then xf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes")
+
+    Using.resource(StringWriter()) { writer =>
+      xf.transform(DOMSource(doc), StreamResult(writer))
+      writer.getBuffer.toString
+    }
+
+
 /*
  * Conversions
  */
@@ -128,7 +161,7 @@ def anyToNode(any: Any): Node =
   any.asInstanceOf[Matchable] match
     case Success(x) => anyToNode(x)
     case Failure(ex) =>
-      LoggerFactory.getLogger("htmltags").error("Exception caught", ex)
+      logger.error("Exception caught", ex)
       s"Throwable caught: ${ex.getClass.getCanonicalName} - message:${ex.getMessage}"
     case opt: Option[?] => anyToNode(opt.toSeq)
     case xs: Seq[?] => Frag(xs.map(x => anyToNode(x)))

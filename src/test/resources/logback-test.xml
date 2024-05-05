@@ -1,0 +1,16 @@
+<configuration debug="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date - %level - %logger{15} - %message%n%xException{5}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.greenfossil.htmltags" level="off"/>
+
+  <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger name="ch.qos.logback.classic" level="WARN"/>
+
+</configuration>

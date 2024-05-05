@@ -64,14 +64,15 @@ class HtmltagsImplicitsSuite extends munit.FunSuite  {
   }
 
   test("Any to Text") {
+    val now = java.time.LocalDate.now
     val anyString: Any = "test"
     val anyDouble: Any = 1.2
-    val anyLocalDate: Any = java.time.LocalDate.now
+    val anyLocalDate: Any = now
     val anyNull: Any = null
     val anyNil: Any = Nil
     val optNum: Option[Any] = Option(1)
     val tags = div("String=", anyString,  ", Double=", anyDouble, ", Date=", anyLocalDate, ", Option[Int]=", optNum, ", Null=", anyNull, ", AnyNil=", anyNil)
-    println(s"any text ${tags.render}")
+    assertNoDiff(tags.render, s"<div>String=test, Double=1.2, Date=${now.toString}, Option[Int]=1, Null=, AnyNil=</div>")
   }
 
 }

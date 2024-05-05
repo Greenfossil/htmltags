@@ -34,7 +34,7 @@ import scala.collection.mutable.ListBuffer
 
 object Selectors:
 
-  val logger = LoggerFactory.getLogger(this.getClass.getPackage.getName)
+  private [css] val logger = LoggerFactory.getLogger(this.getClass.getPackage.getName)
 
   def query[T <: Tag](selectorString: String, root: T): List[Tag] = new Selectors(root).query(selectorString)
 

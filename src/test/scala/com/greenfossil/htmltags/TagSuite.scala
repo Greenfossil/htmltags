@@ -90,7 +90,13 @@ class TagSuite extends munit.FunSuite {
         )
       )
 
-    println(result.render)
+    assertNoDiff(result.prettyPrint, """|<div class="ui huge blue container">
+                                        |  <div class="firstDiv huge green header">
+                                        |    <div>test</div>
+                                        |    <div>something</div>
+                                        |  </div>
+                                        |</div>
+                                        |""".stripMargin)
     assertEquals(result, expectedResult)
 
   }
@@ -105,6 +111,7 @@ class TagSuite extends munit.FunSuite {
   test("scala.util.Try - Failure") {
     import scala.util.Try
     val tag = div(Try(throw IllegalArgumentException("Bad Argument")))
+    
     assertEquals(tag.render, "<div>Throwable caught: java.lang.IllegalArgumentException - message:Bad Argument</div>")
   }
 

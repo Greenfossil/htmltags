@@ -18,6 +18,9 @@ package com.greenfossil.htmltags
 
 import com.greenfossil.htmltags.css.Selectors
 import com.greenfossil.htmltags.css.parser.SelectorGroup
+import org.slf4j.LoggerFactory
+
+private [htmltags] val logger = LoggerFactory.getLogger("om.greenfossil.htmltags")
 
 private def anyToString(any: AttributeValueScalarType): String =
   any match
@@ -351,6 +354,8 @@ trait Tag extends Node with TagCSSQuerySupport[Tag]:
   def replaceNodes(newNodes: Seq[Node]): Tag = using(normalizeNodes(newNodes = newNodes))
 
   def render: String
+  
+  def prettyPrint = render.toDom.prettyPrint
 
   /*
    * May have a Seq[Node] or a Seq[Attr]
@@ -496,13 +501,13 @@ trait Tag extends Node with TagCSSQuerySupport[Tag]:
   def modifyNodes(cssSelector: String, modFn: (Tag, Location) => Option[Tag]): Node = Selectors.modifyNodes(cssSelector, modFn)(this)
 
   //add new nodes as the first child of a given cssSelector
-  def addAsFirstChild(selectorString: String, newNodes: Node*) = Selectors.addAsFirstChild(selectorString, newNodes*)(this)
+  def addAsFirstChild(selectorString: String, newNodes: Node*): Tag = Selectors.addAsFirstChild(selectorString, newNodes*)(this)
 
   //modify value of a specified attribute based on user defined conditions
-  def modifyAttribute(cssSelector: String, modAttr: Attribute, modFn: (Attribute) => Option[Attribute]): Node = Selectors.modifyAttribute(cssSelector, modAttr, modFn)(this)
+  def modifyAttribute(cssSelector: String, modAttr: Attribute, modFn: (Attribute) => Option[Attribute]): Tag = Selectors.modifyAttribute(cssSelector, modAttr, modFn)(this)
 
   //delete value from a specified attribute
-  def deleteFromAttribute(selectorString: String, attribute: Attribute) = Selectors.removeAttrTokens(selectorString, attribute)(this)
+  def deleteFromAttribute(selectorString: String, attribute: Attribute): Tag = Selectors.removeAttrTokens(selectorString, attribute)(this)
 
   def :+(tag:Tag): Seq[Tag] = Seq(this, tag)
 

@@ -64,30 +64,22 @@ class SelectorsQuerySuite extends munit.FunSuite{
 
   test("Test for E:first-child") {
     val result = renderFromSampleCode("p:first-child")
-    println(s"E:first-child")
-    println(result)
     assertNoDiff(result, p1.render + p3a.render + p4a.render)
   }
 
   test("Test for E:last-child") {
     val result = renderFromSampleCode("p:last-child")
-    println(s"E:last-child")
-    println(result)
     assertNoDiff(result, p4b.render)
   }
 
   test("Test for first-of-type"){
     val result = renderFromSampleCode("p:first-of-type")
-    println(s"p:first-of-type")
-    println(result)
     val expectedMarkup = p1.render + p3a.render + p4a.render
     assertNoDiff(result, expectedMarkup)
   }
 
   test("Test for last-of-type"){
     val result = renderFromSampleCode("p:last-of-type")
-    println(s"p:last-of-type")
-    println(result)
     val expectedMarkup = p2.render + p3b.render + p4b.render
     assertNoDiff(result, expectedMarkup)
   }
@@ -95,22 +87,16 @@ class SelectorsQuerySuite extends munit.FunSuite{
   test("Test for nth-of-type"){
     val cssQuery = "p:nth-of-type(1)"
     val result = renderFromSampleCode(cssQuery)
-    println(cssQuery)
-    println(result)
     val expectedMarkup = p1.render + p3a.render + p4a.render
     assertNoDiff(result, expectedMarkup)
 
     val cssQuery1 = "p:nth-of-type(odd)"
     val result1 = renderFromSampleCode(cssQuery1)
-    println(cssQuery1)
-    println(result1)
     val expectedMarkup1 = p1.render + p3a.render + p4a.render
     assertNoDiff(result1, expectedMarkup1)
 
     val cssQuery2 = "p:nth-of-type(even)"
     val result2 = renderFromSampleCode(cssQuery2)
-    println(cssQuery2)
-    println(result2)
     val expectedMarkup2 = p2.render + p3b.render + p4b.render
     assertNoDiff(result2, expectedMarkup2)
 
@@ -119,16 +105,12 @@ class SelectorsQuerySuite extends munit.FunSuite{
   test("Test for nth-child"){
     val cssQueryOdd = "p:nth-child(odd)"
     val result = renderFromSampleCode(cssQueryOdd)
-    println(cssQueryOdd)
-    println(result)
 
     val expectedMarkupOdd = p1.render+p3a.render+p4a.render+p4b.render
     assertNoDiff(result, expectedMarkupOdd)
 
     val cssQueryEven = "p:nth-child(even)"
     val resultEven = renderFromSampleCode(cssQueryEven)
-    println(cssQueryEven)
-    println(resultEven)
 
     val expectedMarkupEven = p2.render+p3b.render
     assertNoDiff(resultEven, expectedMarkupEven)
@@ -137,16 +119,12 @@ class SelectorsQuerySuite extends munit.FunSuite{
   test("Test for nth-last-child"){
     val cssQueryOdd = "p:nth-last-child(odd)"
     val result = renderFromSampleCode(cssQueryOdd)
-    println(cssQueryOdd)
-    println(result)
 
     val expectedMarkupOdd = p2.render+p3a.render+p4a.render+p4b.render
     assertNoDiff(result, expectedMarkupOdd)
 
     val cssQueryEven = "p:nth-last-child(even)"
     val resultEven = renderFromSampleCode(cssQueryEven)
-    println(cssQueryEven)
-    println(resultEven)
 
     val expectedMarkupEven = p1.render+p3b.render
     assertNoDiff(resultEven, expectedMarkupEven)
@@ -170,9 +148,7 @@ class SelectorsQuerySuite extends munit.FunSuite{
   test("Test for only-child"){
     val cssQuery = "p:only-child"
     val result = render(cssQuery, onlyChildSampleCode)
-    println(cssQuery)
-    println(result)
-    val expectedMarkup = (p("only child 1")).render + (p("only child 2")).render
+    val expectedMarkup = p("only child 1").render + p("only child 2").render
     assertNoDiff(result, expectedMarkup)
   }
 

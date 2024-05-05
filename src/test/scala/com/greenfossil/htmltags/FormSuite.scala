@@ -48,7 +48,14 @@ class FormSuite extends munit.FunSuite {
 
   test("urlencoded form with tuples"){
     val form = Form.urlencoded("/action", ("hidden", "apple","1"), "orange" -> 2, ("submit", "submit", "Submit"))(id:="id", cls:="ckass")
-    println(s"form ${form.render}")
+    assertEquals(form.elems.size, 3)
+    assertNoDiff(form.render, """<form method="POST" id="id" class="ckass" enctype="application/x-www-form-urlencoded" action="/action"><input type="hidden" name="apple" value="1"/><input name="orange" value="2"/><input type="submit" name="submit" value="Submit"/></form>""")
+    assertNoDiff(form.prettyPrint, """|<form action="/action" class="ckass" enctype="application/x-www-form-urlencoded" id="id" method="POST">
+                                      |  <input name="apple" type="hidden" value="1"/>
+                                      |  <input name="orange" value="2"/>
+                                      |  <input name="submit" type="submit" value="Submit"/>
+                                      |</form>
+                                      |""".stripMargin)
   }
 
 
@@ -57,7 +64,12 @@ class FormSuite extends munit.FunSuite {
       Form.hidden("apple" -> 1, "orange" -> 2),
       input(tpe:="submit", value:="Submit")
     )
-    println(s"form ${form.render}")
+    assertNoDiff(form.prettyPrint,  """|<form action="/action" enctype="application/x-www-form-urlencoded" method="POST">
+                                       |  <input name="apple" type="hidden" value="1"/>
+                                       |  <input name="orange" type="hidden" value="2"/>
+                                       |  <input type="submit" value="Submit"/>
+                                       |</form>
+                                       |""".stripMargin)
   }
 
   test("create urlencoded form with input tags"){
@@ -65,12 +77,21 @@ class FormSuite extends munit.FunSuite {
       input(tpe:="text", name:="apple", value:="2"),
       input(tpe:="submit", value:="Submit")
     )
-    println(s"form ${form.render}")
+    assertNoDiff(form.prettyPrint, """|<form action="/action" enctype="application/x-www-form-urlencoded" method="POST">
+                                      |  <input name="apple" type="text" value="2"/>
+                                      |  <input type="submit" value="Submit"/>
+                                      |</form>
+                                      |""".stripMargin)
   }
 
   test("submitButton"){
     val button = Form.submitButton("/action", "apple" -> 1, "orange" -> "two")(cls:="ui button", "Click to Submit")
-    println(s"button ${button.render}")
+    assertNoDiff(button.prettyPrint, """|<form action="/action" enctype="application/x-www-form-urlencoded" method="POST">
+                                        |  <input name="apple" type="hidden" value="1"/>
+                                        |  <input name="orange" type="hidden" value="two"/>
+                                        |  <button class="ui button" type="submit">Click to Submit</button>
+                                        |</form>
+                                        |""".stripMargin)
   }
 
 }

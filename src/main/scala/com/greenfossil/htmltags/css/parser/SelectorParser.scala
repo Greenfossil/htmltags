@@ -20,10 +20,10 @@ package com.greenfossil.htmltags.css.parser
   * Adapted from https://github.com/chrsan/css-selectors-scala
   * Created by chungonn on 10/7/17.
   */
+import com.greenfossil.htmltags.css.Selectors
 import com.greenfossil.htmltags.css.parser.Specifier.*
 import com.greenfossil.htmltags.css.parser.Specifier.PseudoClass.*
 import com.greenfossil.htmltags.css.parser.Specifier.PseudoNth.*
-import org.slf4j.LoggerFactory
 
 import scala.util.parsing.combinator.*
 
@@ -138,7 +138,7 @@ private[css] class SelectorParser extends RegexParsers with PackratParsers:
     try parseAll(selectors, input).get
     catch
       case ex: Exception =>
-        LoggerFactory.getLogger("htmltags.css.parser").error(s"Parser failure selector [${input}]", ex)
+        Selectors.logger.error(s"Parser failure selector [${input}]", ex)
         Nil
 
 end SelectorParser
