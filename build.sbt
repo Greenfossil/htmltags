@@ -2,7 +2,7 @@ name := "htmltags"
 
 organization := "com.greenfossil"
 
-version := "1.0.7"
+version := "1.0.8"
 
 scalaVersion := "3.3.3"
 
@@ -18,8 +18,11 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "2.0.12",
 //  "ch.qos.logback" % "logback-core" % "1.5.6" % Provided,
   "ch.qos.logback" % "logback-classic" % "1.5.6" % Provided,
-  "org.scalameta" %% "munit" % "1.0.0-RC1" % Test
+  "org.scalameta" %% "munit" % "1.0.0" % Test
 )
+
+//https://www.scala-sbt.org/1.x/docs/Publishing.html
+ThisBuild / versionScheme := Some("early-semver")
 
 lazy val htmltags = project in file(".")
 
