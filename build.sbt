@@ -2,9 +2,9 @@ name := "htmltags"
 
 organization := "com.greenfossil"
 
-version := "1.0.8"
+version := "1.1.0-RC1"
 
-scalaVersion := "3.3.3"
+scalaVersion := "3.5.0"
 
 scalacOptions ++= Seq("-feature",  "-deprecation", "-Wunused:all")
 
@@ -25,8 +25,3 @@ libraryDependencies ++= Seq(
 ThisBuild / versionScheme := Some("early-semver")
 
 lazy val htmltags = project in file(".")
-
-//Remove logback from test jar
-Test / packageBin / mappings ~= {
-  _.filterNot(_._1.getName.startsWith("logback"))
-}
