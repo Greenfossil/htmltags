@@ -2,7 +2,7 @@ name := "htmltags"
 
 organization := "com.greenfossil"
 
-version := "1.1.0-RC1"
+version := "1.1.0"
 
 scalaVersion := "3.5.0"
 
@@ -16,7 +16,6 @@ Compile / javacOptions ++= Seq("-source", "17")
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0",
   "org.slf4j" % "slf4j-api" % "2.0.12",
-//  "ch.qos.logback" % "logback-core" % "1.5.6" % Provided,
   "ch.qos.logback" % "logback-classic" % "1.5.6" % Provided,
   "org.scalameta" %% "munit" % "1.0.0" % Test
 )
