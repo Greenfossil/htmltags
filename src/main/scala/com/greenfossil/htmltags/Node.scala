@@ -488,8 +488,6 @@ trait Tag extends Node with TagCSSQuerySupport[Tag]:
   /*
    * Selectors APIs
    */
-  import com.greenfossil.htmltags.css.Selectors
-
   override def addNodes(selectorString: String, newNodes: Node*): Tag = Selectors.addNodes(selectorString, newNodes*)(this)
 
   override def deleteTags(selectorString: String, deleteAttrs: Attribute*): Tag = Selectors.deleteTags(selectorString, deleteAttrs*)(this)

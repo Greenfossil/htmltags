@@ -113,7 +113,7 @@ extension (sc: StringContext)
   def htmltags(args: Matchable*): String =
     val partIterator = sc.parts.iterator
     val argIterator: Iterator[Matchable] = args.iterator
-    var buf = new StringBuffer(partIterator.next())
+    val buf = new StringBuffer(partIterator.next())
     while(partIterator.hasNext)
       buf.append(anyToNode(argIterator.next()).render)
       buf.append(partIterator.next)
