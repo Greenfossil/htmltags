@@ -10,7 +10,7 @@ ThisBuild / scmInfo := Some(
 
 ThisBuild / homepage := Some(url("https://github.com/Greenfossil/htmltags"))
 
-ThisBuild / description := "A Scala 3 extension for Typesafe Config library"
+ThisBuild / description := "Template engine library for Scala 3"
 
 ThisBuild / licenses := List(
   "Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")
