@@ -103,7 +103,7 @@ class Selectors[T <: Tag](val root: T):
         specifier match 
           case a: Attribute => queryByAttribute(a, locations)
           case p: PseudoClass => queryByPseudoClass(p.value, locations)
-          case p: PseudoElement => locations
+          case _: PseudoElement => locations
           case p: PseudoNth => queryByPseudoNth(p, locations)
           case n: Negation => locations diff loop(n.selector :: Nil)
         
@@ -153,10 +153,10 @@ class Selectors[T <: Tag](val root: T):
   }
 
   def addNodes(selectorString: String, newNodes: Node*): T = 
-    modifyNodes(selectorString, (tag, loc) => Option(tag.apply(newNodes*)))
+    modifyNodes(selectorString, (tag, _ /*loc*/) => Option(tag.apply(newNodes*)))
 
   def deleteTags(selectorString: String, deleteNodes: com.greenfossil.htmltags.Attribute*): T = {
-    def deleteFn(tag: Tag, loc:Location):Option[Tag] = {
+    def deleteFn(tag: Tag, @unused loc:Location):Option[Tag] = {
       deleteNodes match {
         case Nil => None
         case _ =>
@@ -180,7 +180,7 @@ class Selectors[T <: Tag](val root: T):
     * @return
     */
   def replaceNodes(selectorString: String, newNodes: Node*): T = {
-    def replaceFn(tag: Tag, loc: Location): Option[Tag] =
+    def replaceFn(tag: Tag, @unused loc: Location): Option[Tag] =
       newNodes match
         case Seq(newTag: Tag) => Option(newTag)
         case _ => Option(tag.using(newNodes))
@@ -198,14 +198,14 @@ class Selectors[T <: Tag](val root: T):
   }
 
   def addAsFirstChild(selectorString: String, newNodes: Node*): T =
-    def addAsFirstChildFn(tag: Tag, loc: Location): Option[Tag] = Option(tag.using(newNodes ++ tag.nodes))
+    def addAsFirstChildFn(tag: Tag, @unused loc: Location): Option[Tag] = Option(tag.using(newNodes ++ tag.nodes))
     modifyNodes(selectorString, addAsFirstChildFn)
 
   def modifyAttribute(selectorString: String,
                       targetAttr: com.greenfossil.htmltags.Attribute,
                       _modifyAttrFn: (com.greenfossil.htmltags.Attribute) => Option[com.greenfossil.htmltags.Attribute]
                      ): T = {
-    def modifyAttrInTagFn(tag: Tag, loc: Location): Option[Tag] = {
+    def modifyAttrInTagFn(tag: Tag, @unused loc: Location): Option[Tag] = {
       val existingAttr = tag.attrs
       val newAttrs = existingAttr.foldLeft(Seq.empty[com.greenfossil.htmltags.Attribute]){(res,attr) =>
         existingAttr.find(_.name == targetAttr.name) match 
@@ -218,7 +218,7 @@ class Selectors[T <: Tag](val root: T):
   }
 
   def removeAttrTokens(selectorString: String, removeAttrVal: com.greenfossil.htmltags.Attribute): T =
-    def removeAttrTokensFn(tag: Tag, loc: Location): Option[Tag] = Option(tag.removeAttrsTokens(removeAttrVal))
+    def removeAttrTokensFn(tag: Tag, @unused loc: Location): Option[Tag] = Option(tag.removeAttrsTokens(removeAttrVal))
     modifyNodes(selectorString, removeAttrTokensFn)
 
   private def queryByTagNameAndCombinator(selector: Selector, locations: List[Location]): List[Location] =
@@ -257,7 +257,7 @@ class Selectors[T <: Tag](val root: T):
     case PseudoClass.Root => locations.filter(_.isTop)
     case PseudoClass.Empty =>
       locations.filterNot(loc => loc.tag.nodes.exists {
-        case v@StringText(txt) => v.valueString.nonEmpty
+        case v@StringText(_) => v.valueString.nonEmpty
         case _ => true
       })
     case PseudoClass.FirstChild => locations.filter(prevElem(_).isEmpty)

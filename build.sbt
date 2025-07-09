@@ -2,9 +2,9 @@ name := "htmltags"
 
 organization := "com.greenfossil"
 
-version := "1.3.0-RC1"
+version := "1.3.0"
 
-scalaVersion := "3.7.0"
+scalaVersion := "3.7.1"
 
 scalacOptions ++= Seq("-feature",  "-deprecation", "-Wunused:all")
 
