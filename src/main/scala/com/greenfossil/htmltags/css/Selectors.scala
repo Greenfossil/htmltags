@@ -207,10 +207,14 @@ class Selectors[T <: Tag](val root: T):
                      ): T = {
     def modifyAttrInTagFn(tag: Tag, @unused loc: Location): Option[Tag] = {
       val existingAttr = tag.attrs
-      val newAttrs = existingAttr.foldLeft(Seq.empty[com.greenfossil.htmltags.Attribute]){(res,attr) =>
-        existingAttr.find(_.name == targetAttr.name) match 
-          case None => res :+ attr
-          case Some(tokenAttr) => res ++ _modifyAttrFn(tokenAttr)
+      // Fix: apply modifier to the current attribute when its name matches targetAttr.name
+      val newAttrs = existingAttr.foldLeft(Seq.empty[com.greenfossil.htmltags.Attribute]){ (res, attr) =>
+        if (attr.name == targetAttr.name) then
+          _modifyAttrFn(attr) match
+            case None => res // remove attribute when modifier returns None
+            case Some(modAttr) => res :+ modAttr
+        else
+          res :+ attr
       }
       Option(tag.replaceAttrs(newAttrs *))
     }

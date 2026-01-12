@@ -30,4 +30,15 @@ class BugSuite extends munit.FunSuite {
     }
   }
 
+  test("attribute replace with multiple attributes") {
+    val tag = div(
+      div(cls := "red blue yellow", name := "nameAttr")
+    )
+
+    val replacedTag = tag.modifyAttribute(".red", cls, a => Option(a.findAndReplaceValue("blue", "green")))
+
+    assertEquals(replacedTag, div(div(cls := "red green yellow", name := "nameAttr"))
+    )
+  }
+
 }
