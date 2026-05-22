@@ -116,7 +116,7 @@ extension (sc: StringContext)
     val buf = new StringBuffer(partIterator.next())
     while(partIterator.hasNext)
       buf.append(anyToNode(argIterator.next()).render)
-      buf.append(partIterator.next)
+      buf.append(partIterator.next())
     buf.toString
 
 extension (s: String) def :=(value: AttributeValueType): Attribute = StaticAttribute(s, "") := value
