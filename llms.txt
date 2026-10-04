@@ -1,0 +1,156 @@
+# htmltags — DSL cheat sheet
+
+Greenfossil's Scala 3 HTML templating engine. Typed tag/attribute builders that
+render HTML server-side. `README.md` has the tutorial; this file is the quick
+reference.
+
+```scala
+import com.greenfossil.htmltags.*
+```
+
+## Tags
+
+```scala
+div("hello")                       // <div>hello</div>
+html(head(title := "My Page"), body(h1("Hi")))   // nested; head/body are PairedTag
+br                                 // <br/>
+img(src := "/a.png")               // <img src="/a.png"/>
+```
+
+`PairedTag("div")` (`<div>…</div>`), `UnPairedTag("br")` (`<br/>`), `StartTag("meta")`
+(`<meta>`, never content). Tags are values; `tag(label, nodes*)` builds a custom
+one. 139 tag bindings in `Tags.scala`.
+
+## Attributes
+
+```scala
+div(cls := "card", id := "c1")     // <div class="card" id="c1"></div>
+h1(backgroundColor := "blue")     // <h1 style="background-color: blue;"></h1>
+input(tpe := "text", value := "x", disabled)   // boolean flag: name only
+```
+
+Plain attributes (`attr("x")`) render `x="v"`; CSS attributes (`cssattr("x")`)
+fold into a `style="…"` block. 218 bindings in `Attrs.scala`. `hidden`,
+`checked`, `disabled`, `autofocus`, `selected`, `multiple`, `required`, … are
+no-value flags.
+
+Dynamic namespaces (`Node.scala`):
+
+```scala
+div(data.placeholder := "hi")      // <div data-placeholder="hi"></div>
+span(aria.label := "Menu")         // <span aria-label="Menu"></span>
+svg(xmlns("svg") := "...")         // namespace helper
+```
+
+`data.*` and `aria.*` emit `prefix-<suffix>` via `Dynamic`.
+
+## The `:=` value lattice — `AttributeValueType`
+
+The RHS of `attr := _` accepts (`Extensions.scala`):
+
+```
+String | Int | Long | Double | Float | BigDecimal | Boolean     // scalar
+CSSUnit | RawText | AttributeValueLike                          // special
+Option[scalar] | Seq[scalar]                                    // collections
+```
+
+- `CSSUnit`: `20.pt`, `1.5.rem`, `50.pct` (`.px .pt .pct .mm .cm .in .pc .em .ch
+  .ex .rem .deg .grad .rad .turn`).
+- `Option`: `None` → renders nothing (attribute omitted); `Some(v)` → `v`.
+- `Seq`: space-joined (e.g. class lists).
+- `String` and every scalar are escaped on render (see below).
+
+## Extending the value type — `AttributeValueLike` (the seam)
+
+```scala
+trait AttributeValueLike:
+  def render: String
+
+case class Money(cents: Long) extends AttributeValueLike:
+  def render: String = f"${cents / 100.0}%.2f"
+
+div(price := Money(1999))          // <div price="19.99"></div>
+```
+
+Implement `def render: String` and the value is assignable with the ordinary
+`:=` — **no core change, no escaping surprise** (the rendered string is escaped
+like any attribute value). This is the sanctioned extension seam for a binding
+library to carry a domain value through.
+
+**Reference implementation:** htmx's `HxJsonAttribute` (`hx-vals` / `hx-config` /
+`hx-headers`) — a JSON-valued attribute built on this seam. JSON (`JsValue`,
+`Json.obj`) lives in `commons-json`, *not* here: `htmltags` stays dependency-clean
+(see `AGENTS.md` — JSON is a binding-library concern).
+
+## Escaping (and the `raw()` trap)
+
+- **Text nodes** escape six characters: `"`→`&quot;`, `'`→`&apos;`,
+  `<`→`&lt;`, `>`→`&gt;`, `&`→`&amp;`, `/`→`&#x2F;`.
+- **Default attribute values** escape only `"` and `'` (`&quot;` / `&apos;`);
+  `<`, `>`, `&`, `/` pass through verbatim.
+
+```scala
+p("<script>alert('x')</script>")
+// <p>&lt;script&gt;alert(&apos;x&apos;)&lt;&#x2F;script&gt;</p>
+```
+
+- `attr(name, renderValueAsEscape = false)` opts an attribute out of escaping.
+- **`raw(text)` / `RawText` bypasses escaping entirely** — the XSS trap. Wrap
+  only trusted, self-produced markup (or already-correct content that must not
+  be escaped twice).
+
+## Conditional rendering
+
+```scala
+div(1 to 5 map (i => ifTrue(i > 2, p("Paragraph ", i))))    // only i > 2
+div(1 to 5 map (i => ifFalse(i > 2, p("Paragraph ", i))))   // only i <= 2
+```
+
+Overloads exist for `Tag`, `Attribute`, `Node`, and `String`.
+
+## Interpolator
+
+```scala
+val n = 3
+htmltags"<p>${n} items</p>"        // args are rendered (escaped) via anyToNode
+```
+
+## Forms — `Form.scala`
+
+```scala
+form(method := "POST", action := "/save", enctype := "multipart/form-data")
+input(tpe := "hidden", name := "csrf", value := token)
+
+import com.greenfossil.htmltags.Form
+Form.hidden("csrf" -> token)                 // Seq[Tag] of hidden inputs
+Form.text("q" -> "hi")                       // Seq[Tag] text inputs
+Form.inputs("a" -> 1, "b" -> "x")            // (name, value) tuples
+Form.urlencoded("/save")(Form.text("q" -> "hi")*)   // full form
+Form.multipart("/upload")                    // multipart form
+```
+
+`(String, AttributeValueType)` and `(String, String, AttributeValueType)` have
+`given Conversion`s to `FormInputType`, so tuples can be passed directly.
+
+## CSS selectors — query & transform
+
+```scala
+val frag = div(p("1"), p("2"), p("3"))
+frag.cssQuery("p:first-child")               // Seq[Tag]
+frag.addNodes("div.target", p("new"))        // insert
+frag.deleteTags("#third-paragraph")          // remove
+frag.replaceNodes("p", span("x"))            // replace matched
+frag.modifyAttribute(".p", cls, modFn)       // edit an attribute
+```
+
+## Rendering
+
+```scala
+frag.render                        // compact HTML String
+frag.prettyPrint                   // pretty-printed DOM String
+Seq(nodeA, nodeB).render           // render a Seq[Node]
+"<p>x</p>".toDom.prettyPrint       // String → DOM → pretty
+```
+
+`anyToNode` (used by the interpolator) flattens `Option`/`Seq`/`Try`, maps
+`null`/`Nil` → nothing, and falls back to `toString` for other types.
