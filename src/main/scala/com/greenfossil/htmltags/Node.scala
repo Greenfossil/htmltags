@@ -206,6 +206,33 @@ case class DynAttribute(name: String, value: AttributeValueType, sep: String = "
   override def replaceValue(newValue: AttributeValueType): Attribute = copy(value = newValue)
 
 object aria extends Dynamic:
+  // Common ARIA attributes with discoverable, typed names. Names mirror the
+  // lowercase ARIA suffix exactly (`aria.labelledby`, not `aria.labelledBy`);
+  // the Dynamic fallback appends any other suffix verbatim.
+  val label = attr("aria-label")
+  val labelledby = attr("aria-labelledby")
+  val describedby = attr("aria-describedby")
+  val hidden = attr("aria-hidden")
+  val live = attr("aria-live")
+  val atomic = attr("aria-atomic")
+  val relevant = attr("aria-relevant")
+  val busy = attr("aria-busy")
+  val current = attr("aria-current")
+  val expanded = attr("aria-expanded")
+  val pressed = attr("aria-pressed")
+  val selected = attr("aria-selected")
+  val checked = attr("aria-checked")
+  val disabled = attr("aria-disabled")
+  val invalid = attr("aria-invalid")
+  val controls = attr("aria-controls")
+  val haspopup = attr("aria-haspopup")
+  val modal = attr("aria-modal")
+  val roledescription = attr("aria-roledescription")
+  val valuenow = attr("aria-valuenow")
+  val valuemin = attr("aria-valuemin")
+  val valuemax = attr("aria-valuemax")
+  val valuetext = attr("aria-valuetext")
+
   def selectDynamic(attrName: String) = DynAttribute("aria-" + attrName, "")
 
 object data extends Dynamic:

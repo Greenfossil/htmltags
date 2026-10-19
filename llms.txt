@@ -19,7 +19,7 @@ img(src := "/a.png")               // <img src="/a.png"/>
 
 `PairedTag("div")` (`<div>…</div>`), `UnPairedTag("br")` (`<br/>`), `StartTag("meta")`
 (`<meta>`, never content). Tags are values; `tag(label, nodes*)` builds a custom
-one. 139 tag bindings in `Tags.scala`.
+one. Modern semantic tags include `search(...)` and the Web Components `slot(...)`.
 
 ## Attributes
 
@@ -30,19 +30,58 @@ input(tpe := "text", value := "x", disabled)   // boolean flag: name only
 ```
 
 Plain attributes (`attr("x")`) render `x="v"`; CSS attributes (`cssattr("x")`)
-fold into a `style="…"` block. 218 bindings in `Attrs.scala`. `hidden`,
-`checked`, `disabled`, `autofocus`, `selected`, `multiple`, `required`, … are
-no-value flags.
+fold into a `style="…"` block. `hidden`, `inert`, `checked`, `disabled`,
+`autofocus`, `selected`, `multiple`, `required`, … are no-value flags. Modern
+attributes include `popover`, `popovertarget`, `popovertargetaction`, `command`,
+`commandfor`, `enterkeyhint`, `inputmode`, `fetchpriority`, `decoding`,
+`shadowrootmode`, `shadowrootdelegatesfocus`, `part`. `slot` is in `Attrs2`
+(because a `slot` tag also exists).
+
+All attributes are statically typed [[Attribute]] values; the binding fixes the
+HTML name, and call sites use `:=` rather than an attribute-name string.
+
+### Attribute-name casing
+
+- **Hyphenated HTML attributes and CSS properties → camelCase Scala binding.**
+  Preserve the hyphen in the emitted name: `val httpEquiv =
+  attr("http-equiv")`, `val acceptCharset = attr("accept-charset")`,
+  `val borderColor = cssattr("border-color")` (CSS properties fold into
+  `style="…"`).
+- **HTML attributes with no hyphen stay lowercase** (`colspan`, `rowspan`).
+  **SVG attributes keep their spec casing** (`viewBox`, `preserveAspectRatio`).
+- **ARIA is the exception.** The `aria-*` suffix is a single lowercase token, so
+  typed names mirror it exactly: `aria.labelledby`, `aria.describedby`,
+  `aria.haspopup`, `aria.valuenow` — never `aria.labelledBy`.
+- **Dynamic `data.*` / `aria.*` suffixes are verbatim.** Use nested dynamic names
+  for `data-*` hyphens: `data.request.id` → `data-request-id`.
 
 Dynamic namespaces (`Node.scala`):
 
 ```scala
 div(data.placeholder := "hi")      // <div data-placeholder="hi"></div>
 span(aria.label := "Menu")         // <span aria-label="Menu"></span>
+section(aria.labelledby := "title", aria.describedby := "question")
+                                   // <section aria-labelledby="title" aria-describedby="question"></section>
+span(aria.autocomplete := "list")  // dynamic fallback for an unlisted name
 svg(xmlns("svg") := "...")         // namespace helper
 ```
 
-`data.*` and `aria.*` emit `prefix-<suffix>` via `Dynamic`.
+`data.*` and `aria.*` emit `prefix-<suffix>` via `Dynamic`. A nested dynamic
+expression composes with hyphens, so no raw attribute string is needed:
+
+```scala
+div(data.click.count := 0)          // <div data-click-count="0"></div>
+div(data.request.id := "r1")        // <div data-request-id="r1"></div>
+div(data.wb.last.activity := "...") // <div data-wb-last-activity="..."></div>
+```
+
+`data.*` accepts the normal value lattice (String, Int, Boolean, Option, Seq, …);
+see `DataAttributeSuite`. Common ARIA names (`label`, `labelledby`,
+`describedby`, `hidden`, `live`, `current`, `expanded`, `pressed`, `controls`,
+`haspopup`, `modal`, `valuenow`, …) are typed `val`s whose names mirror the exact
+lowercase suffix; any other `aria-*` name remains available through the dynamic
+fallback and is appended verbatim. Prefer these namespaces over
+`attr("data-…")` / `attr("aria-…")` in new code.
 
 ## The `:=` value lattice — `AttributeValueType`
 

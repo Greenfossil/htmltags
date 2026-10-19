@@ -83,14 +83,14 @@ class Selectors[T <: Tag](val root: T):
   def query(selectorGroups: List[SelectorGroup]): List[Tag] = 
     val tags = locationsOf(selectorGroups).map(loc => loc.tag).distinct
     Selectors.logger.debug(s"SelectorGroup (${selectorGroups}) found ${tags.size} locs")
-    tags.zipWithIndex foreach ((tag, index) => Selectors.logger.debug(s"loc #${index} {${tag.tagLabel}}"))
+    tags.zipWithIndex.foreach((tag, index) => Selectors.logger.debug(s"loc #${index} {${tag.tagLabel}}"))
     tags
   
 
   def locationsOf(selectorString: String): List[Location] = 
     val locations = locationsOf(SelectorParser.parse(selectorString))
     Selectors.logger.debug(s"SelectorString [${selectorString}] found ${locations.size} locs")
-    locations.zipWithIndex foreach ((loc, index) => Selectors.logger.debug(s"loc #${index} {${loc.tag.tagLabel}}"))
+    locations.zipWithIndex.foreach((loc, index) => Selectors.logger.debug(s"loc #${index} {${loc.tag.tagLabel}}"))
     locations
   
 

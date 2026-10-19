@@ -39,7 +39,7 @@ val meta = StartTag("meta")         // <meta> (never has content)
 ```
 
 Add to `Tags.scala` (or `Tags2` for `title`/`style`), grouped with its section,
-matching the surrounding style. 139 tag bindings today.
+matching the surrounding style.
 
 Attributes (`Attrs.scala`):
 
@@ -48,9 +48,27 @@ val lang = attr("lang")             // a plain HTML attribute
 val style = cssattr("style")        // a CSS attribute → folded into style="…"
 ```
 
-Add to `Attrs.scala` (or `Attrs2` for names that collide with tags). 218
-attribute bindings today. A dynamic namespace is an `object … extends Dynamic`
+Add to `Attrs.scala` (or `Attrs2` for names that collide with tags). A dynamic
+namespace is an `object … extends Dynamic`
 that emits `prefix-<suffix>` (`aria`, `data`, `xmlns` in `Node.scala`).
+
+Attributes are statically typed `Attribute` values; the binding fixes the HTML
+name, and call sites use `:=` rather than an attribute-name string.
+
+### Attribute-name casing
+
+- **Hyphenated HTML attributes and CSS properties use camelCase Scala names**,
+  with the hyphen kept in the emitted attribute/property:
+  `val httpEquiv = attr("http-equiv")`, `val acceptCharset =
+  attr("accept-charset")`, `val borderColor = cssattr("border-color")` (CSS
+  folds into `style="…"`).
+- **HTML attributes with no hyphen stay lowercase** (`colspan`, `rowspan`);
+  **SVG attributes keep their spec casing** (`viewBox`, `preserveAspectRatio`).
+- **ARIA names are the exception**: the `aria-*` suffix is a single lowercase
+  token, so typed names mirror it exactly (`aria.labelledby`, not
+  `aria.labelledBy`).
+- **Dynamic `data.*` / `aria.*` suffixes are appended verbatim**; use nested
+  dynamic names for `data-*` hyphens (`data.request.id` → `data-request-id`).
 
 Every new tag/attr is a public API addition — add a golden to the relevant suite
 (`TagSuite`, `DataAttributeSuite`, `AttributeValueLikeSuite`, …).

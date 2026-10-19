@@ -456,6 +456,16 @@ Result:
 </div>
 ```
 
+Nested dynamic names compose with hyphens:
+
+```scala
+div(data.request.id := "r1")       // <div data-request-id="r1"></div>
+div(data.wb.last.activity := "…")  // <div data-wb-last-activity="…"></div>
+```
+
+The same value lattice applies; `DataAttributeSuite` pins the string/int/boolean/
+Option/null cases.
+
 ## License
 
 htmltags is licensed under the Apache license version 2.

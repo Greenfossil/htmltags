@@ -54,6 +54,7 @@ val h5 = PairedTag("h5")
 val h6 = PairedTag("h6")
 val hgroup = PairedTag("hgroup")
 val nav = PairedTag("nav")
+val search = PairedTag("search")
 val section = PairedTag("section")
 
 
@@ -195,6 +196,7 @@ val summary = PairedTag("summary")
 
 val element = UnPairedTag("element")
 val shadow = UnPairedTag("shadow")
+val slot = PairedTag("slot")
 val template = UnPairedTag("template")
 
 /*

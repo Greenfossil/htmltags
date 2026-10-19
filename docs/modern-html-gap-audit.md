@@ -1,20 +1,19 @@
 # Modern-HTML coverage gap audit
 
 Date: 2026-10-05
-Status: **audit only** — no code change. Implementing any gap below is a
-separate, future decision (each is a public API addition).
+Status: **implemented 2026-10-19** — the gaps below are now public bindings with
+goldens in `ModernHtmlSuite`. The original audit remains the rationale.
 
-Verified against the source at `v1.4.0` (`Tags.scala`: 139 tag bindings;
-`Attrs.scala`: 218 attribute bindings). "Absent" = no binding for the name.
+Verified against the source at `v1.4.0`; additions landed after that baseline.
 
-## Missing tags
+## Implemented tags
 
 | Tag | Note |
 |---|---|
 | `search` | HTML `<search>` landmark container (2023). |
-| `slot` | Web Components `<slot>` distribution outlet. (Note: `vuejs`/`htmx` may define their own `slot`; a core binding is separate.) |
+| `slot` | Web Components `<slot>` distribution outlet. Its attribute is `Attrs2.slot` (it would collide with the tag name). |
 
-## Missing attributes
+## Implemented attributes
 
 ### Popover API
 
@@ -62,7 +61,7 @@ Verified against the source at `v1.4.0` (`Tags.scala`: 139 tag bindings;
 
 | Attribute | Note |
 |---|---|
-| `part` | `part="…"` — exposes a shadow-DOM part for `::part()`. |
+| `part` | `part="…"` — exposes a shadow-DOM part for `::part()` (implemented). |
 
 ## Present — no action (checked during the audit)
 
@@ -73,7 +72,6 @@ Attributes: `loading`, `srcset`, `sizes`, `translate`.
 
 ## Scope
 
-This document records coverage only. It proposes no implementation order and
-changes no code; adding any item above is a future unit with its own golden and
-its own version decision (`early-semver` — the `htmltags` version moves, not this
-audit).
+The bindings are implemented and covered by `ModernHtmlSuite`. Publishing them
+requires a minor version bump under `early-semver`; this document records the
+coverage rationale, not the release version.
